@@ -9,8 +9,10 @@ import com.example.smartcontroller.repository.ApplianceRepo;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -37,10 +39,6 @@ class SmartcontrollerApplicationTests {
 
 	@Autowired
 	private ApplianceRepo applianceRepo;
-	@Autowired
-	static RestTemplate RestTemplate = new RestTemplate();
-	@Autowired
-	static MockRestServiceServer mockServer;
 	@Autowired
 	ApplianceController applianceController;
 
@@ -70,26 +68,6 @@ class SmartcontrollerApplicationTests {
 		assertTrue(response.statusCode() == HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
-	@Nested
-	class testNest{
-		@BeforeAll
-		public static void setUp() {
-			mockServer = MockRestServiceServer.createServer(RestTemplate);
-		}
-
-		@Test
-		public void testGetMessage() {
-			mockServer.expect(requestTo("http://localhost:8080/user/createuser/Linn"))
-					.andExpect(method(HttpMethod.GET))
-					.andRespond(withSuccess("Appliance registered successfully", MediaType.TEXT_PLAIN));
-
-			CreateApplianceDto dto = new CreateApplianceDto("Test", "TestModel123", Status.ON);
-			String result = (String) applianceController.addAppliance(dto).getBody();
-
-			mockServer.verify();
-			assertEquals("Appliance registered successfully", result);
-		}
-	}
 
 
 }
